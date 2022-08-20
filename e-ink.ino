@@ -1,8 +1,10 @@
 #include "GUI_Paint.h"
 #include "DEV_Config.h"
 #include "EPD_1in02d.h"
-#include "fonts.h"
 #include "imagedata.h"
+extern "C" {
+#include "fonts.h"
+}
 
 unsigned char image_temp[1280]={0};
 Paint paith(image_temp, 80, 128);
