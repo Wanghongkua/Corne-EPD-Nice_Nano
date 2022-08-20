@@ -35,14 +35,15 @@ code to change can be found below:
 There are 2 errors in the original [WaveShare Github code]
 (https://github.com/waveshare/e-Paper).
 
-The first is the Chinese characters need to be 4 bytes long in `struct CH_CN` in
-file `fonts.h`.
+The first is the Chinese characters need to be _3_ bytes long in `struct CH_CN` in
+file `fonts.h`. However, in `c++` it has to be _4_ bytes. Therefore, all font
+files should be changed to `c`.
 
-```cpp
+```c
 //GB2312
 typedef struct                                          // 汉字字模数据结构
 {
-  unsigned char index[4];                               // 汉字内码索引
+  char index[3];                               // 汉字内码索引
   const char matrix[MAX_HEIGHT_FONT*MAX_WIDTH_FONT/8];  // 点阵码数据
 }CH_CN;
 ```
