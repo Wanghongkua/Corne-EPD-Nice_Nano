@@ -63,6 +63,7 @@ public:
     void DrawFilledRectangle(int x0, int y0, int x1, int y1, int colored);
     void DrawCircle(int x, int y, int radius, int colored);
     void DrawFilledCircle(int x, int y, int radius, int colored);
+    void DrawCNStringAt(int x, int y, const char* text, cFONT* font, int colored);
 
 private:
     unsigned char* image;

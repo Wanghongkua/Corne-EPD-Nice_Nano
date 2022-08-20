@@ -22,14 +22,15 @@ void setup() {
  
 
  Serial.print("Drawing:BlackImage\r\n");
- paith.DrawStringAt(13, 0, "1.02inch", &Font12, 0xff);
- paith.DrawStringAt(22, 13, "epd", &Font12, 0xff);
- paith.DrawStringAt(10, 30, "ABC123", &Font16, 0xff);
+ paith.DrawCNStringAt(10, 10, "微雪", &Font24CN, 0xff);
+//  paith.DrawStringAt(13, 0, "1.02inch", &Font12, 0xff);
+//  paith.DrawStringAt(22, 13, "epd", &Font12, 0xff);
+//  paith.DrawStringAt(10, 30, "ABC123", &Font16, 0xff);
  
- paith.DrawLine(10, 50, 60, 100, 0xff );
- paith.DrawLine(10, 100, 60, 50, 0xff);    
- paith.DrawRectangle(10, 50, 60, 100, 0xff);
- paith.DrawFilledCircle(35, 75, 20, 0xff);
+//  paith.DrawLine(10, 50, 60, 100, 0xff );
+//  paith.DrawLine(10, 100, 60, 50, 0xff);    
+//  paith.DrawRectangle(10, 50, 60, 100, 0xff);
+//  paith.DrawFilledCircle(35, 75, 20, 0xff);
 
  Serial.print("EPD_Display\r\n");
  EPD_Display(image_temp);
