@@ -219,21 +219,23 @@ void Paint::DrawCNStringAt(int x, int y, const char* text, cFONT* font, int colo
       refcolumn += font->ASCII_Width;
     } else {                                   //中文
       for (Num = 0; Num < font->size ; Num++) {
-        if ((*p_text == pgm_read_byte(&font->table[Num].index[0])) && (*(p_text + 1) == pgm_read_byte(&font->table[Num].index[1])) && (*(p_text + 2) == pgm_read_byte(&font->table[Num].index[2]))) {
-          const char* ptr = &font->table[Num].matrix[0];
+        if ((*p_text == pgm_read_byte(&font->table[Num].index[0])) &&
+            (*(p_text + 1) == pgm_read_byte(&font->table[Num].index[1])) &&
+            (*(p_text + 2) == pgm_read_byte(&font->table[Num].index[2]))) {
+            const char *ptr = &font->table[Num].matrix[0];
 
-          for (j = 0; j < font->Height; j++) {
-            for (i = 0; i < font->Width; i++) {
-              if (pgm_read_byte(ptr) & (0x80 >> (i % 8))) {
-                DrawPixel(refcolumn + i, y + j, colored);
-              }
-              if (i % 8 == 7) {
-                ptr++;
-              }
-            }
-            if (font->Width % 8 != 0) {
-              ptr++;
-            }
+            for (j = 0; j < font->Height; j++) {
+                for (i = 0; i < font->Width; i++) {
+                    if (pgm_read_byte(ptr) & (0x80 >> (i % 8))) {
+                        DrawPixel(refcolumn + i, y + j, colored);
+                    }
+                    if (i % 8 == 7) {
+                        ptr++;
+                    }
+                }
+                if (font->Width % 8 != 0) {
+                    ptr++;
+                }
           }
           break;
         }
