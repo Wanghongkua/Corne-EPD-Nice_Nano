@@ -8,6 +8,7 @@ extern "C" {
 
 unsigned char image_temp[1280]={0};
 Paint paith(image_temp, 80, 128);
+BlueMicro_EPD EPD;
 void setup() {
 //   pinMode(EPD_CS_PIN, OUTPUT);
 //   pinMode(EPD_RST_PIN, OUTPUT);
@@ -15,11 +16,11 @@ void setup() {
 //   pinMode(EPD_BUSY_PIN, INPUT);
 // }
  Config_Init();
- if(EPD_Init() != 0) {
+ if(EPD.Init() != 0) {
      Serial.print("e-Paper init failed\r\n");
  }
  Serial.print("1.02inch e-Paper Module1\r\n");
- EPD_Clear();
+ EPD.Clear();
  DEV_Delay_ms(500);
  
 
@@ -35,15 +36,15 @@ void setup() {
 //  paith.DrawFilledCircle(35, 75, 20, 0xff);
 
  Serial.print("EPD_Display\r\n");
- EPD_Display(image_temp);
+ EPD.Display(image_temp);
  DEV_Delay_ms(2000);
 
  
- EPD_Display_Image((uint8_t*)IMAGE_DATA);
+ EPD.Display_Image((uint8_t*)IMAGE_DATA);
  DEV_Delay_ms(500);
- EPD_Clear();
+ EPD.Clear();
  
- EPD_Sleep();
+ EPD.Sleep();
  Serial.print("Goto Sleep mode...\r\n");
  DEV_Delay_ms(2000);
 }

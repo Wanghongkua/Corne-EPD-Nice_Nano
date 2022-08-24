@@ -36,14 +36,32 @@
 #define EPD_WIDTH   80
 #define EPD_HEIGHT  128
 
-UBYTE EPD_Init(void);
-void EPD_Clear(void);
-void EPD_Display(UBYTE *Image);
-void EPD_Display_Image(UBYTE *Image);
-void EPD_DisplayPartial(UBYTE *Image1, UBYTE *Image2);
-void EPD_Sleep(void);
-void EPD_Part_Init(void);
-void EPD_DisplayPartia_Clear(void);
+// UBYTE EPD_Init(void);
+// void EPD_Clear(void);
+// void EPD_Display(UBYTE *Image);
+// void EPD_Display_Image(UBYTE *Image);
+// void EPD_DisplayPartial(UBYTE *Image1, UBYTE *Image2);
+// void EPD_Sleep(void);
+// void EPD_Part_Init(void);
+// void EPD_DisplayPartia_Clear(void);
+
+class BlueMicro_EPD
+{
+public:
+    BlueMicro_EPD(void);
+    UBYTE Init(void);
+    void Clear(void);
+    void Display(UBYTE *Image);
+    void Display_Image(UBYTE *Image);
+    void DisplayPartial(UBYTE *Image1, UBYTE *Image2);
+    void Sleep(void);
+    void Part_Init(void);
+    // TODO find online
+    void DisplayPartia_Clear(void);
+};
+
+// void drawStartup(void);
+// void drawStatus(void);
+// void drawDebug(void);
+
 #endif
-
-

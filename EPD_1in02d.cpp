@@ -185,7 +185,9 @@ void EPD_TurnOnDisplay(void)
 /******************************************************************************
 function :Initialize the e-Paper register
 ******************************************************************************/
-UBYTE EPD_Init(void)
+BlueMicro_EPD::BlueMicro_EPD(void){}
+
+UBYTE BlueMicro_EPD::Init(void)
 {
 	EPD_Reset(); 
 	
@@ -234,9 +236,125 @@ UBYTE EPD_Init(void)
 }
 
 /******************************************************************************
+function :	Clear screen
+******************************************************************************/
+void BlueMicro_EPD::Clear (void)
+{ 
+	unsigned int i;
+	EPD_SendCommand(0x10);
+	for(i=0;i<1280;i++){
+		EPD_SendData(0X00);
+	}
+	EPD_SendCommand(0x13);	       //Transfer new data
+	for(i=0;i<1280;i++){
+		EPD_SendData(0xff);
+	}
+	EPD_TurnOnDisplay();
+}
+
+void BlueMicro_EPD::Display(UBYTE *Image)
+{ 
+  UWORD Width;
+  Width = (EPD_WIDTH % 8 == 0)? (EPD_WIDTH / 8 ): (EPD_WIDTH / 8 + 1);
+  //EPD_Init();
+  EPD_SendCommand(0x10);
+  for (UWORD j = 0; j < EPD_HEIGHT; j++) {
+        for (UWORD i = 0; i < Width; i++) {
+            EPD_SendData(0xff);
+        }
+  }
+
+  EPD_SendCommand(0x13);
+  for (UWORD j = 0; j < EPD_HEIGHT; j++) {
+        for (UWORD i = 0; i < Width; i++) {
+            EPD_SendData(~(Image[i + j * Width]));
+        }
+  }
+  EPD_TurnOnDisplay();
+}
+
+/******************************************************************************
+function :	Sends the image buffer in RAM to e-Paper and displays
+parameter:
+    Image :Displayed data
+******************************************************************************/
+void BlueMicro_EPD::Display_Image(UBYTE *Image)
+{ 
+	UWORD Width;
+	Width = (EPD_WIDTH % 8 == 0)? (EPD_WIDTH / 8 ): (EPD_WIDTH / 8 + 1);
+	//EPD_Init();
+	EPD_SendCommand(0x10);
+	for (UWORD j = 0; j < EPD_HEIGHT; j++) {
+        for (UWORD i = 0; i < Width; i++) {
+            EPD_SendData(0xff);
+        }
+	}
+
+	EPD_SendCommand(0x13);
+	for (UWORD j = 0; j < EPD_HEIGHT; j++) {
+        for (UWORD i = 0; i < Width; i++) {
+            EPD_SendData(~pgm_read_byte(&Image[i + j * Width]));
+        }
+	}
+	EPD_TurnOnDisplay();
+}
+
+/******************************************************************************
+function :	Sends the image buffer in RAM to e-Paper and displays
+parameter:
+    old_Image:  Last displayed data
+    Image2   :  New data
+******************************************************************************/
+void BlueMicro_EPD::DisplayPartial(UBYTE *old_Image, UBYTE *Image)
+{
+    /* Set partial Windows */
+    EPD_SendCommand(0x91);		//This command makes the display enter partial mode
+    EPD_SendCommand(0x90);		//resolution setting
+    EPD_SendData(0);           //x-start
+    EPD_SendData(79);       //x-end
+
+    EPD_SendData(0);
+    EPD_SendData(127);  //y-end
+    EPD_SendData(0x00);
+
+    UWORD Width;
+    Width = (EPD_WIDTH % 8 == 0)? (EPD_WIDTH / 8 ): (EPD_WIDTH / 8 + 1);
+
+    /* send data */
+    EPD_SendCommand(0x10);
+    for (UWORD j = 0; j < EPD_HEIGHT; j++) {
+        for (UWORD i = 0; i < Width; i++) {
+            EPD_SendData(old_Image[i + j * Width]);
+        }
+    }
+
+    EPD_SendCommand(0x13);
+    for (UWORD j = 0; j < EPD_HEIGHT; j++) {
+        for (UWORD i = 0; i < Width; i++) {
+            EPD_SendData(Image[i + j * Width]);
+        }
+    }
+
+    /* Set partial refresh */
+    EPD_TurnOnDisplay();
+}
+
+/******************************************************************************
+function :	Enter sleep mode
+******************************************************************************/
+void BlueMicro_EPD::Sleep(void)
+{
+    EPD_SendCommand(0X02);  	//power off
+    EPD_WaitUntilIdle();
+    EPD_SendCommand(0X07);  	//deep sleep
+    EPD_SendData(0xA5);
+    DEV_Digital_Write(EPD_RST_PIN, 0);// Module reset
+}
+
+/******************************************************************************
 function :Partial refresh initialization e-paper
 ******************************************************************************/
-void EPD_Part_Init(void)
+void BlueMicro_EPD::Part_Init(void)
 {
 EPD_Reset();
   EPD_SendCommand(0xD2);      
@@ -279,126 +397,3 @@ EPD_Reset();
     
   EPD_WaitUntilIdle();
 }
-
-/******************************************************************************
-function :	Clear screen
-******************************************************************************/
-void EPD_Clear(void)
-{ 
-	unsigned int i;
-	EPD_SendCommand(0x10);
-	for(i=0;i<1280;i++){
-		EPD_SendData(0X00);
-	}
-	EPD_SendCommand(0x13);	       //Transfer new data
-	for(i=0;i<1280;i++){
-		EPD_SendData(0xff);
-	}
-	EPD_TurnOnDisplay();
-}
-
-
-
-/******************************************************************************
-function :	Sends the image buffer in RAM to e-Paper and displays
-parameter:
-    Image :Displayed data
-******************************************************************************/
-void EPD_Display_Image(UBYTE *Image)
-{ 
-	UWORD Width;
-	Width = (EPD_WIDTH % 8 == 0)? (EPD_WIDTH / 8 ): (EPD_WIDTH / 8 + 1);
-	//EPD_Init();
-	EPD_SendCommand(0x10);
-	for (UWORD j = 0; j < EPD_HEIGHT; j++) {
-        for (UWORD i = 0; i < Width; i++) {
-            EPD_SendData(0xff);
-        }
-	}
-
-	EPD_SendCommand(0x13);
-	for (UWORD j = 0; j < EPD_HEIGHT; j++) {
-        for (UWORD i = 0; i < Width; i++) {
-            EPD_SendData(~pgm_read_byte(&Image[i + j * Width]));
-        }
-	}
-	EPD_TurnOnDisplay();
-}
-
-void EPD_Display(UBYTE *Image)
-{ 
-  UWORD Width;
-  Width = (EPD_WIDTH % 8 == 0)? (EPD_WIDTH / 8 ): (EPD_WIDTH / 8 + 1);
-  //EPD_Init();
-  EPD_SendCommand(0x10);
-  for (UWORD j = 0; j < EPD_HEIGHT; j++) {
-        for (UWORD i = 0; i < Width; i++) {
-            EPD_SendData(0xff);
-        }
-  }
-
-  EPD_SendCommand(0x13);
-  for (UWORD j = 0; j < EPD_HEIGHT; j++) {
-        for (UWORD i = 0; i < Width; i++) {
-            EPD_SendData(~(Image[i + j * Width]));
-        }
-  }
-  EPD_TurnOnDisplay();
-}
-
-/******************************************************************************
-function :	Sends the image buffer in RAM to e-Paper and displays
-parameter:
-    old_Image:  Last displayed data
-    Image2   :  New data
-******************************************************************************/
-void EPD_DisplayPartial(UBYTE *old_Image, UBYTE *Image)
-{
-    /* Set partial Windows */
-    EPD_SendCommand(0x91);		//This command makes the display enter partial mode
-    EPD_SendCommand(0x90);		//resolution setting
-    EPD_SendData(0);           //x-start
-    EPD_SendData(79);       //x-end
-
-    EPD_SendData(0);
-    EPD_SendData(127);  //y-end
-    EPD_SendData(0x00);
-
-    UWORD Width;
-    Width = (EPD_WIDTH % 8 == 0)? (EPD_WIDTH / 8 ): (EPD_WIDTH / 8 + 1);
-
-    /* send data */
-    EPD_SendCommand(0x10);
-    for (UWORD j = 0; j < EPD_HEIGHT; j++) {
-        for (UWORD i = 0; i < Width; i++) {
-            EPD_SendData(old_Image[i + j * Width]);
-        }
-    }
-
-    EPD_SendCommand(0x13);
-    for (UWORD j = 0; j < EPD_HEIGHT; j++) {
-        for (UWORD i = 0; i < Width; i++) {
-            EPD_SendData(Image[i + j * Width]);
-        }
-    }
-
-    /* Set partial refresh */
-    EPD_TurnOnDisplay();
-}
-
-/******************************************************************************
-function :	Enter sleep mode
-******************************************************************************/
-void EPD_Sleep(void)
-{
-    EPD_SendCommand(0X02);  	//power off
-    EPD_WaitUntilIdle();
-    EPD_SendCommand(0X07);  	//deep sleep
-    EPD_SendData(0xA5);
-    DEV_Digital_Write(EPD_RST_PIN, 0);// Module reset
-}
-
-
-
-
-
